@@ -10,7 +10,12 @@ static const char* ITEM_NAMES[NUM_ITEM_TYPES] = {
     "Sticks",
     "Wood Pickaxe",
     "Stone Pickaxe",
-    "Torch"
+    "Torch",
+    "Sand",
+    "Coal",
+    "Iron Ingot",
+    "Glass",
+    "Craft Table"
 };
 
 const char* item_get_name(ItemType type) {
@@ -22,24 +27,32 @@ const char* item_get_name(ItemType type) {
 
 BlockType item_to_block(ItemType item) {
     switch (item) {
-        case ITEM_DIRT:      return BLOCK_DIRT;
-        case ITEM_WOOD:      return BLOCK_WOOD;
-        case ITEM_STONE:     return BLOCK_STONE;
-        case ITEM_PLANKS:    return BLOCK_PLANKS;
-        default:             return BLOCK_AIR;
+        case ITEM_DIRT:           return BLOCK_DIRT;
+        case ITEM_WOOD:           return BLOCK_WOOD;
+        case ITEM_STONE:          return BLOCK_STONE;
+        case ITEM_PLANKS:         return BLOCK_PLANKS;
+        case ITEM_SAND:           return BLOCK_SAND;
+        case ITEM_GLASS:          return BLOCK_GLASS;
+        case ITEM_CRAFTING_TABLE: return BLOCK_CRAFTING_TABLE;
+        default:                  return BLOCK_AIR;
     }
 }
 
 ItemType block_to_item(BlockType block) {
     switch (block) {
         case BLOCK_GRASS:
-        case BLOCK_DIRT:     return ITEM_DIRT;
-        case BLOCK_WOOD:     return ITEM_WOOD;
+        case BLOCK_DIRT:           return ITEM_DIRT;
+        case BLOCK_WOOD:           return ITEM_WOOD;
         case BLOCK_STONE:
-        case BLOCK_COBBLE:   return ITEM_STONE;
-        case BLOCK_PLANKS:   return ITEM_PLANKS;
-        case BLOCK_LEAVES:   return ITEM_STICKS;
-        default:             return ITEM_NONE;
+        case BLOCK_COBBLE:         return ITEM_STONE;
+        case BLOCK_PLANKS:         return ITEM_PLANKS;
+        case BLOCK_LEAVES:         return ITEM_STICKS;
+        case BLOCK_SAND:           return ITEM_SAND;
+        case BLOCK_COAL_ORE:       return ITEM_COAL;
+        case BLOCK_IRON_ORE:       return ITEM_IRON;
+        case BLOCK_GLASS:          return ITEM_GLASS;
+        case BLOCK_CRAFTING_TABLE: return ITEM_CRAFTING_TABLE;
+        default:                   return ITEM_NONE;
     }
 }
 
@@ -123,6 +136,7 @@ void inventory_check_recipes(Inventory *inv) {
     int totalPlanks = 0;
     int totalSticks = 0;
     int totalStone = 0;
+    int totalCoal = 0;
     int totalItems = 0;
 
     for (int i = 0; i < CRAFT_GRID_SLOTS; i++) {
@@ -132,6 +146,7 @@ void inventory_check_recipes(Inventory *inv) {
             if (inv->craftGrid[i].type == ITEM_PLANKS) totalPlanks++;
             if (inv->craftGrid[i].type == ITEM_STICKS) totalSticks++;
             if (inv->craftGrid[i].type == ITEM_STONE) totalStone++;
+            if (inv->craftGrid[i].type == ITEM_COAL) totalCoal++;
         }
     }
 
@@ -142,29 +157,36 @@ void inventory_check_recipes(Inventory *inv) {
         return;
     }
 
-    // Recipe 2: 2 Planks -> 4 Sticks
+    // Recipe 2: 4 Planks in 2x2 grid -> 1 Crafting Table
+    if (totalPlanks == 4 && totalItems == 4) {
+        inv->craftOutput.type = ITEM_CRAFTING_TABLE;
+        inv->craftOutput.count = 1;
+        return;
+    }
+
+    // Recipe 3: 2 Planks -> 4 Sticks
     if (totalPlanks == 2 && totalItems == 2) {
         inv->craftOutput.type = ITEM_STICKS;
         inv->craftOutput.count = 4;
         return;
     }
 
-    // Recipe 3: 2 Planks + 1 Stick -> Wooden Pickaxe
+    // Recipe 4: 2 Planks + 1 Stick -> Wooden Pickaxe
     if (totalPlanks >= 2 && totalSticks >= 1 && totalItems == 3) {
         inv->craftOutput.type = ITEM_WOOD_PICK;
         inv->craftOutput.count = 1;
         return;
     }
 
-    // Recipe 4: 2 Stone + 1 Stick -> Stone Pickaxe
+    // Recipe 5: 2 Stone + 1 Stick -> Stone Pickaxe
     if (totalStone >= 2 && totalSticks >= 1 && totalItems == 3) {
         inv->craftOutput.type = ITEM_STONE_PICK;
         inv->craftOutput.count = 1;
         return;
     }
 
-    // Recipe 5: 1 Wood + 1 Stick -> 4 Torches
-    if (totalWood == 1 && totalSticks == 1 && totalItems == 2) {
+    // Recipe 6: 1 Coal/Wood + 1 Stick -> 4 Torches
+    if ((totalCoal == 1 || totalWood == 1) && totalSticks == 1 && totalItems == 2) {
         inv->craftOutput.type = ITEM_TORCH;
         inv->craftOutput.count = 4;
         return;

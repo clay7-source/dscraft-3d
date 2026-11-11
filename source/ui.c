@@ -1,4 +1,5 @@
 #include "ui.h"
+#include "audio.h"
 #include <string.h>
 
 static u16 *sub_framebuffer = NULL;
@@ -18,6 +19,9 @@ static u16 *sub_framebuffer = NULL;
 #define C_GREEN       (RGB15(6, 24, 6) | (1 << 15))
 #define C_CYAN        (RGB15(8, 26, 28) | (1 << 15))
 #define C_BLUE        (RGB15(6, 12, 26) | (1 << 15))
+#define C_SAND        (RGB15(29, 27, 18) | (1 << 15))
+#define C_DARK_SAND   (RGB15(23, 21, 14) | (1 << 15))
+#define C_IRON        (RGB15(25, 25, 26) | (1 << 15))
 
 static inline void set_sub_pixel(int x, int y, u16 color) {
     if (x >= 0 && x < 256 && y >= 0 && y < 192) {
@@ -216,6 +220,37 @@ static void draw_item_icon(int x, int y, ItemType type) {
             draw_fill_rect(x + 5, y + 3, 3, 3, C_GOLD);
             set_sub_pixel(x + 6, y + 2, C_RED);
             break;
+        case ITEM_SAND:
+            draw_fill_rect(x + 2, y + 2, 10, 10, C_SAND);
+            set_sub_pixel(x + 4, y + 4, C_DARK_SAND);
+            set_sub_pixel(x + 8, y + 7, C_DARK_SAND);
+            set_sub_pixel(x + 3, y + 9, C_DARK_SAND);
+            break;
+        case ITEM_COAL:
+            draw_fill_rect(x + 3, y + 3, 8, 8, C_BLACK);
+            set_sub_pixel(x + 4, y + 4, C_DARK_GRAY);
+            set_sub_pixel(x + 7, y + 6, C_DARK_GRAY);
+            set_sub_pixel(x + 5, y + 8, C_DARK_GRAY);
+            break;
+        case ITEM_IRON:
+            draw_fill_rect(x + 3, y + 3, 8, 8, C_IRON);
+            draw_rect_border(x + 3, y + 3, 8, 8, C_WHITE);
+            set_sub_pixel(x + 5, y + 5, C_LIGHT_GRAY);
+            break;
+        case ITEM_GLASS:
+            draw_rect_border(x + 2, y + 2, 10, 10, C_CYAN);
+            set_sub_pixel(x + 4, y + 4, C_WHITE);
+            set_sub_pixel(x + 5, y + 5, C_WHITE);
+            set_sub_pixel(x + 8, y + 8, C_WHITE);
+            break;
+        case ITEM_CRAFTING_TABLE:
+            draw_fill_rect(x + 2, y + 2, 10, 10, C_WOOD);
+            draw_rect_border(x + 2, y + 2, 10, 10, C_BROWN);
+            set_sub_pixel(x + 6, y + 3, C_BROWN);
+            set_sub_pixel(x + 6, y + 4, C_BROWN);
+            set_sub_pixel(x + 3, y + 6, C_BROWN);
+            set_sub_pixel(x + 4, y + 6, C_BROWN);
+            break;
         default:
             break;
     }
@@ -249,6 +284,7 @@ void ui_update(UIState *ui, Inventory *inv, touchPosition *touch,
             // 1. [CRAFT] Button (Top-Right)
             if (tx >= 188 && tx <= 250 && ty >= 2 && ty <= 18) {
                 ui->mode = UI_MODE_CRAFT;
+                audio_play_sfx(SFX_CLICK);
                 return;
             }
 
@@ -270,6 +306,7 @@ void ui_update(UIState *ui, Inventory *inv, touchPosition *touch,
                     int slotX = 24 + i * 44;
                     if (tx >= slotX && tx <= slotX + 34) {
                         inv->selectedSlot = i;
+                        audio_play_sfx(SFX_CLICK);
                         return;
                     }
                 }
@@ -278,12 +315,16 @@ void ui_update(UIState *ui, Inventory *inv, touchPosition *touch,
             // [CLOSE] Button
             if (tx >= 196 && tx <= 250 && ty >= 6 && ty <= 22) {
                 ui->mode = UI_MODE_GAME;
+                audio_play_sfx(SFX_CLICK);
                 return;
             }
 
             // Tap Output Slot to Craft (X: 130..164, Y: 56..90)
             if (tx >= 130 && tx <= 164 && ty >= 56 && ty <= 90) {
-                inventory_craft(inv);
+                if (inv->craftOutput.type != ITEM_NONE && inv->craftOutput.count > 0) {
+                    audio_play_sfx(SFX_CRAFT);
+                    inventory_craft(inv);
+                }
                 return;
             }
 
@@ -301,6 +342,7 @@ void ui_update(UIState *ui, Inventory *inv, touchPosition *touch,
                             if (inv->craftGrid[slotIdx].count == 0) {
                                 inv->craftGrid[slotIdx].type = ITEM_NONE;
                             }
+                            audio_play_sfx(SFX_CLICK);
                             inventory_check_recipes(inv);
                         }
                         return;
@@ -324,6 +366,7 @@ void ui_update(UIState *ui, Inventory *inv, touchPosition *touch,
                                     inv->craftGrid[g].count++;
                                     inv->hotbar[i].count--;
                                     if (inv->hotbar[i].count == 0) inv->hotbar[i].type = ITEM_NONE;
+                                    audio_play_sfx(SFX_POP);
                                     inventory_check_recipes(inv);
                                     break;
                                 }

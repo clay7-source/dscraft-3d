@@ -26,9 +26,31 @@ static inline int get_tile_u(BlockType type, int face) {
             return 96;
         case BLOCK_PLANKS:
             return 112;
+        case BLOCK_SAND:
+            return 128;
+        case BLOCK_COAL_ORE:
+            return 144;
+        case BLOCK_IRON_ORE:
+            return 160;
+        case BLOCK_GLASS:
+            return 176;
+        case BLOCK_CRAFTING_TABLE:
+            if (face == 0) return 192; // Grid top
+            return 208;                // Tools side
         default:
             return 0;
     }
+}
+
+int world_get_surface_height(int x, int z) {
+    if (x < 0) x = 0; if (x >= WORLD_SIZE_X) x = WORLD_SIZE_X - 1;
+    if (z < 0) z = 0; if (z >= WORLD_SIZE_Z) z = WORLD_SIZE_Z - 1;
+    for (int y = WORLD_SIZE_Y - 1; y >= 0; y--) {
+        if (world_grid[x][y][z] != BLOCK_AIR) {
+            return y;
+        }
+    }
+    return 6;
 }
 
 static void spawn_tree(int tx, int ty, int tz) {
@@ -77,11 +99,17 @@ void world_init(void) {
                 if (y == 0) {
                     world_grid[x][y][z] = BLOCK_BEDROCK;
                 } else if (y < surfaceY - 3) {
-                    world_grid[x][y][z] = BLOCK_STONE;
+                    if ((x * 7 + y * 13 + z * 11) % 17 == 0) {
+                        world_grid[x][y][z] = BLOCK_COAL_ORE;
+                    } else if ((x * 5 + y * 19 + z * 3) % 23 == 0) {
+                        world_grid[x][y][z] = BLOCK_IRON_ORE;
+                    } else {
+                        world_grid[x][y][z] = BLOCK_STONE;
+                    }
                 } else if (y < surfaceY) {
-                    world_grid[x][y][z] = BLOCK_DIRT;
+                    world_grid[x][y][z] = (surfaceY <= 5) ? BLOCK_SAND : BLOCK_DIRT;
                 } else if (y == surfaceY) {
-                    world_grid[x][y][z] = BLOCK_GRASS;
+                    world_grid[x][y][z] = (surfaceY <= 5) ? BLOCK_SAND : BLOCK_GRASS;
                 } else {
                     world_grid[x][y][z] = BLOCK_AIR;
                 }

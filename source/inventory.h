@@ -14,6 +14,11 @@ typedef enum {
     ITEM_WOOD_PICK,
     ITEM_STONE_PICK,
     ITEM_TORCH,
+    ITEM_SAND,
+    ITEM_COAL,
+    ITEM_IRON,
+    ITEM_GLASS,
+    ITEM_CRAFTING_TABLE,
     NUM_ITEM_TYPES
 } ItemType;
 

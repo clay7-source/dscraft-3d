@@ -3,7 +3,7 @@
 
 #include <nds.h>
 
-#define TEX_ATLAS_W 128
+#define TEX_ATLAS_W 256
 #define TEX_ATLAS_H 16
 
 void textures_init(void);

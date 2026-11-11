@@ -5,14 +5,20 @@ ifeq ($(strip $(DEVKITARM)),)
 $(error "Please set DEVKITARM in your environment. export DEVKITARM=<path to>devkitARM")
 endif
 
+# NitroFS directory MUST be set before including ds_rules
+NITRODIR	:=	nitrofiles
+export NITRODIR := $(CURDIR)/nitrofiles
+
 include $(DEVKITARM)/ds_rules
 
 #---------------------------------------------------------------------------------
-TARGET		:=	$(shell basename $(CURDIR))
+TARGET		:=	dscraft3d
 BUILD		:=	build
 SOURCES		:=	source
 DATA		:=	data
 INCLUDES	:=	include
+NITRODIR	:=	nitrofiles
+export NITRODIR := $(CURDIR)/nitrofiles
 
 #---------------------------------------------------------------------------------
 ARCH		:=	-march=armv5te -mtune=arm946e-s -mthumb
@@ -23,8 +29,8 @@ ASFLAGS		:=	-g $(ARCH)
 LDFLAGS		=	-specs=ds_arm9.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
 # Libraries
-LIBS		:= 	-lnds9 -lcalico_ds9 -lm
-LIBDIRS		:=	$(LIBNDS) $(DEVKITPRO)/calico
+LIBS		:= 	-lnds9 -lcalico_ds9 -lfat -lm
+LIBDIRS		:=	$(LIBNDS) $(DEVKITPRO)/calico $(DEVKITPRO)/libfat
 
 #---------------------------------------------------------------------------------
 ifneq ($(BUILD),$(notdir $(CURDIR)))

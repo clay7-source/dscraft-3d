@@ -64,13 +64,46 @@ void textures_init(void) {
                 int pRand = rand() % 3;
                 set_pixel(x + 112, y, RGB15(21 + pRand, 16 + pRand, 9 + pRand));
             }
+
+            // 8: Sand (Golden beach sand)
+            int sndRand = rand() % 3;
+            set_pixel(x + 128, y, RGB15(28 + sndRand, 26 + sndRand, 16 + sndRand));
+
+            // 9: Coal Ore (Stone with dark carbon deposits)
+            int coalDep = (rand() % 6 == 0);
+            set_pixel(x + 144, y, coalDep ? RGB15(2, 2, 2) : RGB15(15 + sRand, 15 + sRand, 15 + sRand));
+
+            // 10: Iron Ore (Stone with rust deposits)
+            int ironDep = (rand() % 6 == 0);
+            set_pixel(x + 160, y, ironDep ? RGB15(25, 14, 8) : RGB15(15 + sRand, 15 + sRand, 15 + sRand));
+
+            // 11: Glass (Clear border with specular lines)
+            if (x == 0 || x == 15 || y == 0 || y == 15 || (x == y && x > 3 && x < 8)) {
+                set_pixel(x + 176, y, RGB15(31, 31, 31));
+            } else {
+                set_pixel(x + 176, y, RGB15(8, 16, 22));
+            }
+
+            // 12: Crafting Table Top (3x3 grid over wood)
+            if (x == 5 || x == 10 || y == 5 || y == 10) {
+                set_pixel(x + 192, y, RGB15(12, 7, 3));
+            } else {
+                set_pixel(x + 192, y, RGB15(22, 17, 9));
+            }
+
+            // 13: Crafting Table Side (Oak wood with side tools)
+            if (y > 4 && y < 12 && x > 4 && x < 12) {
+                set_pixel(x + 208, y, RGB15(10, 8, 8)); // Tool slot
+            } else {
+                set_pixel(x + 208, y, RGB15(20, 15, 8));
+            }
         }
     }
 
     // Load into DS 3D Texture VRAM
     glGenTextures(1, &global_texture_id);
     glBindTexture(0, global_texture_id);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TEXTURE_SIZE_128, TEXTURE_SIZE_16, 0,
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TEXTURE_SIZE_256, TEXTURE_SIZE_16, 0,
                  TEXGEN_TEXCOORD | GL_TEXTURE_WRAP_S | GL_TEXTURE_WRAP_T, (u8*)texture_atlas);
 }
 

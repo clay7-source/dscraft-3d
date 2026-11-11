@@ -17,6 +17,11 @@ typedef enum {
     BLOCK_PLANKS,
     BLOCK_COBBLE,
     BLOCK_BEDROCK,
+    BLOCK_SAND,
+    BLOCK_COAL_ORE,
+    BLOCK_IRON_ORE,
+    BLOCK_GLASS,
+    BLOCK_CRAFTING_TABLE,
     NUM_BLOCK_TYPES
 } BlockType;
 
@@ -29,6 +34,7 @@ typedef struct {
 } RaycastHit;
 
 void world_init(void);
+int  world_get_surface_height(int x, int z);
 BlockType world_get_block(int x, int y, int z);
 void world_set_block(int x, int y, int z, BlockType type);
 bool world_is_solid(int x, int y, int z);

@@ -22,6 +22,14 @@ jobs:
       - name: Build NDS ROM
         run: |
           make
+          ls -lh dscraft3d.nds
+          SIZE=$(stat -c%s dscraft3d.nds 2>/dev/null || stat -f%z dscraft3d.nds)
+          echo "Built ROM size: $SIZE bytes"
+          if [ "$SIZE" -lt 10000000 ]; then
+            echo "Injecting NitroFS filesystem into ROM..."
+            ndstool -c dscraft3d.nds -9 dscraft3d.elf -d nitrofiles
+            ls -lh dscraft3d.nds
+          fi
 
       - name: Upload .NDS ROM
         uses: actions/upload-artifact@v4
