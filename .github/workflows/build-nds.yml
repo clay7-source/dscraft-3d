@@ -1,0 +1,30 @@
+name: Build Nintendo DS ROM
+
+on:
+  push:
+    branches: [ "**" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: devkitpro/devkitarm:latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install NDS SDK (libnds)
+        run: |
+          dkp-pacman -S --needed --noconfirm nds-dev
+
+      - name: Build NDS ROM
+        run: |
+          make
+
+      - name: Upload .NDS ROM
+        uses: actions/upload-artifact@v4
+        with:
+          name: dscraft3d-rom
+          path: dscraft3d.nds

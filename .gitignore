@@ -1,0 +1,4 @@
+build/
+*.elf
+*.arm9
+*.map
