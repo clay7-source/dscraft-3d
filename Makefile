@@ -6,8 +6,10 @@ $(error "Please set DEVKITARM in your environment. export DEVKITARM=<path to>dev
 endif
 
 # NitroFS directory MUST be set before including ds_rules
-NITRODIR	:=	nitrofiles
-export NITRODIR := $(CURDIR)/nitrofiles
+NITRO_FILES	:=	$(CURDIR)/nitrofiles
+export NITRO_FILES
+NITRODIR	:=	$(CURDIR)/nitrofiles
+export NITRODIR
 
 include $(DEVKITARM)/ds_rules
 
@@ -17,8 +19,8 @@ BUILD		:=	build
 SOURCES		:=	source
 DATA		:=	data
 INCLUDES	:=	include
-NITRODIR	:=	nitrofiles
-export NITRODIR := $(CURDIR)/nitrofiles
+NITRO_FILES	:=	$(CURDIR)/nitrofiles
+export NITRO_FILES
 
 #---------------------------------------------------------------------------------
 ARCH		:=	-march=armv5te -mtune=arm946e-s -mthumb

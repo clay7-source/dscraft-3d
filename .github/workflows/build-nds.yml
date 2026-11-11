@@ -21,9 +21,6 @@ jobs:
 
       - name: Build NDS ROM
         run: |
-          grep -n -C 5 -i "nitro" /opt/devkitpro/devkitARM/ds_rules || true
-          grep -n -C 5 -i "ndstool" /opt/devkitpro/devkitARM/ds_rules || true
-          find /opt/devkitpro/libnds -name "*.arm7" -o -name "*default*" || true
           make
           ls -lh dscraft3d.nds
 
