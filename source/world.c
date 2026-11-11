@@ -43,8 +43,10 @@ static inline int get_tile_u(BlockType type, int face) {
 }
 
 int world_get_surface_height(int x, int z) {
-    if (x < 0) x = 0; if (x >= WORLD_SIZE_X) x = WORLD_SIZE_X - 1;
-    if (z < 0) z = 0; if (z >= WORLD_SIZE_Z) z = WORLD_SIZE_Z - 1;
+    if (x < 0) x = 0;
+    if (x >= WORLD_SIZE_X) x = WORLD_SIZE_X - 1;
+    if (z < 0) z = 0;
+    if (z >= WORLD_SIZE_Z) z = WORLD_SIZE_Z - 1;
     for (int y = WORLD_SIZE_Y - 1; y >= 0; y--) {
         if (world_grid[x][y][z] != BLOCK_AIR) {
             return y;

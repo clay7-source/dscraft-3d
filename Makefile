@@ -29,7 +29,7 @@ ASFLAGS		:=	-g $(ARCH)
 LDFLAGS		=	-specs=ds_arm9.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
 # Libraries
-LIBS		:= 	-lnds9 -lcalico_ds9 -lfat -lm
+LIBS		:= 	-Wl,--start-group -lfat -lcalico_ds9 -lnds9 -lm -Wl,--end-group
 LIBDIRS		:=	$(LIBNDS) $(DEVKITPRO)/calico $(DEVKITPRO)/libfat
 
 #---------------------------------------------------------------------------------
