@@ -5,11 +5,13 @@ ifeq ($(strip $(DEVKITARM)),)
 $(error "Please set DEVKITARM in your environment. export DEVKITARM=<path to>devkitARM")
 endif
 
+ifeq ($(strip $(TOPDIR)),)
+	export TOPDIR := $(CURDIR)
+endif
+
 # NitroFS directory MUST be set before including ds_rules
-NITRO_FILES	:=	$(CURDIR)/nitrofiles
+NITRO_FILES	:=	$(TOPDIR)/nitrofiles
 export NITRO_FILES
-NITRODIR	:=	$(CURDIR)/nitrofiles
-export NITRODIR
 
 include $(DEVKITARM)/ds_rules
 
@@ -19,8 +21,6 @@ BUILD		:=	build
 SOURCES		:=	source
 DATA		:=	data
 INCLUDES	:=	include
-NITRO_FILES	:=	$(CURDIR)/nitrofiles
-export NITRO_FILES
 
 #---------------------------------------------------------------------------------
 ARCH		:=	-march=armv5te -mtune=arm946e-s -mthumb
