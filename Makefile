@@ -5,14 +5,6 @@ ifeq ($(strip $(DEVKITARM)),)
 $(error "Please set DEVKITARM in your environment. export DEVKITARM=<path to>devkitARM")
 endif
 
-ifeq ($(strip $(TOPDIR)),)
-	export TOPDIR := $(CURDIR)
-endif
-
-# NitroFS directory MUST be set before including ds_rules
-NITRO_FILES	:=	$(TOPDIR)/nitrofiles
-export NITRO_FILES
-
 include $(DEVKITARM)/ds_rules
 
 #---------------------------------------------------------------------------------
@@ -38,6 +30,7 @@ LIBDIRS		:=	$(LIBNDS) $(DEVKITPRO)/calico $(DEVKITPRO)/libfat
 ifneq ($(BUILD),$(notdir $(CURDIR)))
 
 export OUTPUT	:=	$(CURDIR)/$(TARGET)
+export NITRO_FILES :=	$(CURDIR)/nitrofiles
 export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
 			$(foreach dir,$(DATA),$(CURDIR)/$(dir))
 export DEPSDIR	:=	$(CURDIR)/$(BUILD)
